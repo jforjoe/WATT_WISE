@@ -1,9 +1,11 @@
 import numpy as np
 import pandas as pd
 import math
+from tqdm import tqdm
 
 supply_voltage = 230 #Voltage
 frequency = 50 #Hz
+
 
 # VOLTAGE FLUCTUATIONS
 def simulate_voltage(duration):
@@ -53,6 +55,7 @@ def simulate_energy_meter(duration,fan_percentage,freq='H'):
     voltage_fluctuation = simulate_voltage(duration)
 
 
+
     if freq == 'H':
         total_duration = years * 365 * 24  # Total hours in 10 years
         
@@ -61,6 +64,19 @@ def simulate_energy_meter(duration,fan_percentage,freq='H'):
         
     degradation_factor = 0.1 / total_duration  # 10% reduction over 10 years
 
+    
+
+
+
+    '''
+    if freq == 'H':
+        total_duration = years * 365 * 24  # Total hours in 10 years
+        
+    elif freq == 'min':
+        total_duration = years * 365* 24 * 60 # Total minutes in 10 years
+        
+    degradation_factor =np.random.normal(0.1 / total_duration,0.01)   # 10% reduction over 10 years
+    '''
 
 
 
@@ -72,6 +88,8 @@ def simulate_energy_meter(duration,fan_percentage,freq='H'):
         
         voltage = voltage_fluctuation[time]
         current = calculate_current(power_rating,voltage)
+
+        degradation_factor = abs(np.random.normal(degradation_factor,0.0000001))
 
 
         if not fan_on and np.random.rand() < fan_percentage:
@@ -123,6 +141,7 @@ def simulate_energy_meter(duration,fan_percentage,freq='H'):
         energy_readings['apparent_power'].append(apparent_power)
         energy_readings['power_factor'].append(current_power_factor)
 
+
     return energy_readings
 
 
@@ -148,7 +167,7 @@ readings = simulate_energy_meter(len(Time_stamp),fan_percentage,freq='H')   # To
 data=[]
 
 a_p, ap_p = 0, 0
-for t,v,a,i,j,k in zip(Time_stamp, readings['voltage'], readings['current'], readings['active_power'], readings['apparent_power'], readings['power_factor']):
+for t,v,a,i,j,k in tqdm(zip(Time_stamp, readings['voltage'], readings['current'], readings['active_power'], readings['apparent_power'], readings['power_factor']),total=len(Time_stamp)):
     a_p += i
     ap_p += j
     data.append([t,v,a,a_p, ap_p, k])
