@@ -1,10 +1,11 @@
 import numpy as np
 import pandas as pd
+import math
 
 supply_voltage = 230 #Voltage
 frequency = 50 #Hz
 
-# Function to simulate voltage and current fluctuations
+# VOLTAGE FLUCTUATIONS
 def simulate_voltage(duration):
     voltage_nominal = supply_voltage  # Nominal voltage
     voltage_min = 0.95 * voltage_nominal  # Minimum voltage 
@@ -17,12 +18,30 @@ def simulate_voltage(duration):
     return voltage_fluctuations
 
 
+'''
+# This is exponential decay for the power factor
+def degrade_power_factor(initial_power_factor, time, initial_degradation_rate):
+    return initial_power_factor * math.exp(- initial_degradation_rate * time)
+'''
+
+
 
 # ENERGY METER READINGS
 def simulate_energy_meter(duration,fan_percentage,freq='H'):
+
     power_rating = 75  # Watts
     initial_power_factor = 0.9 
     years = 10  # Number of years
+
+
+    energy_readings = {
+        'voltage': [],
+        'current':[],
+        'active_power': [],
+        'reactive_power': [],
+        'apparent_power': [],
+        'power_factor': []
+    }
 
 
     voltage_fluctuation = simulate_voltage(duration)
@@ -35,14 +54,6 @@ def simulate_energy_meter(duration,fan_percentage,freq='H'):
         total_minutes = years * 365* 24 * 60 # Total minutes in 10 years
         degradation_factor = 0.1 / total_minutes  # 10% reduction over 10 years
 
-    energy_readings = {
-        'voltage': [],
-        'current':[],
-        'active_power': [],
-        'reactive_power': [],
-        'apparent_power': [],
-        'power_factor': []
-    }
 
 
     fan_on = False
