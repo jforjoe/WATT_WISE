@@ -27,6 +27,7 @@ def simulate_energy_meter(duration,fan_percentage,freq='H'):
 
     voltage_fluctuation = simulate_voltage(duration)
 
+
     if freq == 'H':
         total_hours = years * 365 * 24  # Total hours in 10 years
         degradation_factor = 0.1 / total_hours  # 10% reduction over 10 years
@@ -42,8 +43,6 @@ def simulate_energy_meter(duration,fan_percentage,freq='H'):
         'apparent_power': [],
         'power_factor': []
     }
-
-
 
 
     fan_on = False
@@ -65,9 +64,6 @@ def simulate_energy_meter(duration,fan_percentage,freq='H'):
             fan_on = False
 
 
-
-
-
         '''
         #this section alone will only simulate at the ideal conditions with no voltage fluctuations
         #enabling this you might want to comment out few lines of codes if necessary from the rest of the code below.
@@ -85,7 +81,6 @@ def simulate_energy_meter(duration,fan_percentage,freq='H'):
             apparent_power = 0
             current_power_factor = last_power_factor
         '''
-
 
 
         if fan_on:
