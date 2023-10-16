@@ -54,11 +54,13 @@ def simulate_energy_meter(duration,fan_percentage,freq='H'):
 
 
     if freq == 'H':
-        total_hours = years * 365 * 24  # Total hours in 10 years
-        degradation_factor = 0.1 / total_hours  # 10% reduction over 10 years
+        total_duration = years * 365 * 24  # Total hours in 10 years
+        
     elif freq == 'min':
-        total_minutes = years * 365* 24 * 60 # Total minutes in 10 years
-        degradation_factor = 0.1 / total_minutes  # 10% reduction over 10 years
+        total_duration = years * 365* 24 * 60   # Total minutes in 10 years
+        
+    degradation_factor = 0.1 / total_duration  # 10% reduction over 10 years
+
 
 
 
