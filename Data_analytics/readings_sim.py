@@ -5,19 +5,16 @@ supply_voltage = 230 #Voltage
 frequency = 50 #Hz
 
 # Function to simulate voltage and current fluctuations
-def simulate_voltage_current(duration):
+def simulate_voltage(duration):
     voltage_nominal = supply_voltage  # Nominal voltage
     voltage_min = 0.95 * voltage_nominal  # Minimum voltage 
     voltage_max = 1.05 * voltage_nominal  # Maximum voltage 
     
-    current_nominal = 0.3  # Nominal current 
-    current_min = 0.9 * current_nominal  # Minimum current
-    current_max = 1.1 * current_nominal  # Maximum current 
 
     voltage_fluctuations = np.random.uniform(voltage_min, voltage_max, duration)
-    current_fluctuations = np.random.uniform(current_min, current_max, duration)
 
-    return voltage_fluctuations, current_fluctuations
+
+    return voltage_fluctuations
 
 
 
@@ -28,7 +25,7 @@ def simulate_energy_meter(duration,fan_percentage,freq='H'):
     years = 10  # Number of years
 
 
-    voltage_fluctuation , current_fluctuation = simulate_voltage_current(duration)
+    voltage_fluctuation = simulate_voltage(duration)
 
     if freq == 'H':
         total_hours = years * 365 * 24  # Total hours in 10 years
@@ -56,7 +53,7 @@ def simulate_energy_meter(duration,fan_percentage,freq='H'):
     for time in range(duration):
         
         voltage = voltage_fluctuation[time]
-        current = current_fluctuation[time]
+        current = power_rating/voltage
 
 
         if not fan_on and np.random.rand() < fan_percentage:
