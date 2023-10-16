@@ -18,11 +18,17 @@ def simulate_voltage(duration):
     return voltage_fluctuations
 
 
-'''
+
+#CURRENT CALCULATION
+def calculate_current(power_rating,voltage):
+    return power_rating/voltage
+
+
+
 # This is exponential decay for the power factor
 def degrade_power_factor(initial_power_factor, time, initial_degradation_rate):
     return initial_power_factor * math.exp(- initial_degradation_rate * time)
-'''
+
 
 
 
@@ -63,7 +69,7 @@ def simulate_energy_meter(duration,fan_percentage,freq='H'):
     for time in range(duration):
         
         voltage = voltage_fluctuation[time]
-        current = power_rating/voltage
+        current = calculate_current(power_rating,voltage)
 
 
         if not fan_on and np.random.rand() < fan_percentage:
