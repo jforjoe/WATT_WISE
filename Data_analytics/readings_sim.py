@@ -4,12 +4,31 @@ import pandas as pd
 supply_voltage = 230 #Voltage
 frequency = 50 #Hz
 
+# Function to simulate voltage and current fluctuations
+def simulate_voltage_current(duration):
+    voltage_nominal = supply_voltage  # Nominal voltage
+    voltage_min = 0.95 * voltage_nominal  # Minimum voltage 
+    voltage_max = 1.05 * voltage_nominal  # Maximum voltage 
+    
+    current_nominal = 0.3  # Nominal current 
+    current_min = 0.9 * current_nominal  # Minimum current
+    current_max = 1.1 * current_nominal  # Maximum current 
+
+    voltage_fluctuations = np.random.uniform(voltage_min, voltage_max, duration)
+    current_fluctuations = np.random.uniform(current_min, current_max, duration)
+
+    return voltage_fluctuations, current_fluctuations
+
+
 
 # ENERGY METER READINGS
 def simulate_energy_meter(duration,fan_percentage,freq='H'):
     power_rating = 75  # Watts
     initial_power_factor = 0.9 
     years = 10  # Number of years
+
+
+    voltage_fluctuation , current_fluctuation = simulate_voltage_current(duration)
 
     if freq == 'H':
         total_hours = years * 365 * 24  # Total hours in 10 years
@@ -20,6 +39,7 @@ def simulate_energy_meter(duration,fan_percentage,freq='H'):
 
     energy_readings = {
         'voltage': [],
+        'current':[],
         'active_power': [],
         'reactive_power': [],
         'apparent_power': [],
@@ -27,11 +47,16 @@ def simulate_energy_meter(duration,fan_percentage,freq='H'):
     }
 
 
+
+
     fan_on = False
 
     last_power_factor =0
 
     for time in range(duration):
+        
+        voltage = voltage_fluctuation[time]
+        current = current_fluctuation[time]
 
 
         if not fan_on and np.random.rand() < fan_percentage:
@@ -46,6 +71,11 @@ def simulate_energy_meter(duration,fan_percentage,freq='H'):
 
 
 
+        '''
+        #this section alone will only simulate at the ideal conditions with no voltage fluctuations
+        #enabling this you might want to comment out few lines of codes if necessary from the rest of the code below.
+        
+        
         if fan_on:
             current_power_factor = max(0, initial_power_factor - time * degradation_factor)
             active_power = power_rating * current_power_factor
@@ -57,8 +87,26 @@ def simulate_energy_meter(duration,fan_percentage,freq='H'):
             reactive_power = 0
             apparent_power = 0
             current_power_factor = last_power_factor
+        '''
 
 
+
+        if fan_on:
+            current_power_factor = max(0, initial_power_factor - time * degradation_factor)
+            active_power = voltage * current * current_power_factor
+            reactive_power = voltage * current * np.sqrt(1 - current_power_factor**2)
+            apparent_power = voltage * current
+
+        else:
+            active_power = 0
+            reactive_power = 0
+            apparent_power = 0
+            current_power_factor = last_power_factor
+
+
+
+        energy_readings['voltage'].append(voltage)
+        energy_readings['current'].append(current)
         energy_readings['active_power'].append(active_power)
         energy_readings['reactive_power'].append(reactive_power)
         energy_readings['apparent_power'].append(apparent_power)
@@ -89,14 +137,14 @@ readings = simulate_energy_meter(len(Time_stamp),fan_percentage,freq='H')   # To
 data=[]
 
 a_p, ap_p = 0, 0
-for t,i,j,k in zip(Time_stamp, readings['active_power'], readings['apparent_power'], readings['power_factor']):
+for t,v,a,i,j,k in zip(Time_stamp, readings['voltage'], readings['current'], readings['active_power'], readings['apparent_power'], readings['power_factor']):
     a_p += i
     ap_p += j
-    data.append([t, a_p, ap_p, k])
+    data.append([t,v,a,a_p, ap_p, k])
 
 
 
-df= pd.DataFrame(data, columns=['Time_stamp', 'active_power','apparent_power','power_factor'])
+df= pd.DataFrame(data, columns=['Time_stamp','voltage','current','active_power','apparent_power','power_factor'])
 
 
 
