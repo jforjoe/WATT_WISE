@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-import math
+import time as t
 
 supply_voltage = 230 #Voltage
 frequency = 50 #Hz
@@ -8,11 +8,11 @@ frequency = 50 #Hz
 # VOLTAGE FLUCTUATIONS
 def simulate_voltage(duration):
     voltage_nominal = supply_voltage  # Nominal voltage
-    voltage_min = 0.95 * voltage_nominal  # Minimum voltage 
-    voltage_max = 1.05 * voltage_nominal  # Maximum voltage 
+    voltage_min = 0.90 * voltage_nominal  # Minimum voltage 
+    voltage_max = 1.10 * voltage_nominal  # Maximum voltage 
     
 
-    voltage_fluctuations = np.random.uniform(voltage_min, voltage_max, duration)
+    voltage_fluctuations = np.random.normal(loc=voltage_nominal, scale=(voltage_max-voltage_min)/6, size=duration)
 
 
     return voltage_fluctuations
@@ -22,12 +22,6 @@ def simulate_voltage(duration):
 #CURRENT CALCULATION
 def calculate_current(power_rating,voltage):
     return power_rating/voltage
-
-
-
-# This is exponential decay for the power factor
-def degrade_power_factor(initial_power_factor, time, initial_degradation_rate):
-    return initial_power_factor * math.exp(- initial_degradation_rate * time)
 
 
 
@@ -66,7 +60,7 @@ def simulate_energy_meter(duration,fan_percentage,freq='H'):
 
     fan_on = False
 
-    last_power_factor =0
+    last_power_factor = 0
 
     for time in range(duration):
         
@@ -122,6 +116,21 @@ def simulate_energy_meter(duration,fan_percentage,freq='H'):
         energy_readings['reactive_power'].append(reactive_power)
         energy_readings['apparent_power'].append(apparent_power)
         energy_readings['power_factor'].append(current_power_factor)
+
+
+
+        '''
+        #This block of code will give the reading in realtime 
+
+        ti = t.localtime()
+        current_time = t.strftime("%H:%M:%S", ti)
+        print(current_time,active_power)
+        t.sleep(60)
+
+        '''
+
+
+
 
     return energy_readings
 
